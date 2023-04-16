@@ -3,13 +3,13 @@
 """
 import time
 import threading
+import re
+
+thread = 25
 
 
-thread = 14
 
-
-
-data = '5106822000********'
+data = '510682*005********'
 
 
 
@@ -56,9 +56,14 @@ if len(data) != 18:
      exit()
 
 count = data.count('*')
-if count > 8:
-    print('>>> 补全数不能超过8位')
+if count > 18:
+    print('>>> 补全数不能超过18位')
     exit()
+
+if count == 0:
+    print('>>> 没有补全位置')
+    exit()
+
 
 
 # 解析出身份证号
@@ -68,11 +73,41 @@ month = data[10:12]
 day = data[12:14]
 tail = data[14:18]
 
+
 print('>>> 城市代码：', city)
 print('>>> 出生年份：', year)
 print('>>> 出生月份：', month)
 print('>>> 出生日期：', day)
 print('>>> 顺序号：', tail)
+
+city_of = None
+with open('citycodes.txt',mode='r',encoding='utf-8') as f:
+    city_of = f.read().split('\n')
+
+city_run = []
+city_replace = city.replace('*','(\d)')
+for i in city_of:
+    if re.match(city_replace, i):
+        city_run.append(i)
+if len(city_run) == 0:
+    print('>>> 错误：城市代码错误')
+    exit()
+
+
+print('>>> 补全城市代码列表：', city_run)
+
+
+# 处理年份
+year_run = []
+if year == '****':
+    year_run = [x for x in range(1949, time.localtime().tm_year+1)]
+else:
+    year_replace = year.replace('*','(\d)')
+    for i in range(1949, time.localtime().tm_year+1):
+        if re.match(year_replace, str(i)):
+            year_run.append(i)
+
+print('>>> 补全年份列表：', year_run)
 
 
 if month == '00':
@@ -169,16 +204,19 @@ for i in month_run:
         else:
             day_run[str(i)] = [day]
 
-for i in day_run:
-    # 判断闰年
-    if int(year) % 4 == 0 and int(year) % 100 != 0 or int(year) % 400 == 0:
-        if i == '02':
-            if '29' not in day_run[i]:
-                day_run[i].append('29')
-    else:
-        if i == '02':
-            if '29' in day_run[i]:
-                day_run[i].remove('29')
+# for i in day_run:
+#     # 判断闰年
+#     if int(year) % 4 == 0 and int(year) % 100 != 0 or int(year) % 400 == 0:
+#         if i == '02':
+#             if '29' not in day_run[i]:
+#                 day_run[i].append('29')
+#     else:
+#         if i == '02':
+#             if '29' in day_run[i]:
+#                 day_run[i].remove('29')
+
+
+
 
 
 print('>>> 补全日期列表：', day_run)
@@ -225,12 +263,23 @@ else:
 
 
 # 计算出所有的可能性
+# all_run = []
+# for i in month_run:
+#     for j in day_run[str(i)]:
+#         for k in tail_run:
+#             # all_run.append(year + i + j + k)
+#             all_run.append(str(year) + str(i) + str(j) + str(k))
+
+
 all_run = []
-for i in month_run:
-    for j in day_run[str(i)]:
-        for k in tail_run:
-            # all_run.append(year + i + j + k)
-            all_run.append(str(year) + str(i) + str(j) + str(k))
+for i in city_run:
+    for j in year_run:
+        for k in month_run:
+            for l in day_run[str(k)]:
+                for m in tail_run:
+                    # all_run.append(year + i + j + k)
+                    all_run.append(str(i) + str(j) + str(k) + str(l) + str(m))
+                    # print(str(i) + str(j) + str(k) + str(l) + str(m))
 
 
 # print('>>> 计算出所有的可能性：', len(all_run))
@@ -247,7 +296,8 @@ def split_and_verify(array,index_index):
         index[index_index] += 1
 
 
-        real = str(city) +  str(i)
+        real = str(i)
+
         if check_id_data(real):
             cache[index_index].append(real)
             # print('>>> 正确：', real)
