@@ -4,12 +4,13 @@
 import time
 import threading
 import re
+import psutil
+import os
+thread = 48
 
-thread = 25
 
 
-
-data = '510682*00*********'
+data = '51068*2000********'
 
 
 
@@ -28,6 +29,14 @@ def check_id_data(n):
         else:
              return False
         
+disable_memory = False
+def Memory_Get():
+    while True:
+        if disable_memory:
+            break
+        memory = psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024
+        print('>>> 正在将数据集加载到内存，已使用(MB)：', memory, end='\r')
+
 
 
 of_year = {
@@ -270,6 +279,8 @@ else:
 #             # all_run.append(year + i + j + k)
 #             all_run.append(str(year) + str(i) + str(j) + str(k))
 
+threading.Thread(target=Memory_Get).start()
+
 
 all_run = []
 for i in city_run:
@@ -282,6 +293,11 @@ for i in city_run:
                     # print(str(i) + str(j) + str(k) + str(l) + str(m))
 
 
+
+disable_memory = True
+time.sleep(1)
+os.system('cls')
+disable_memory = False
 # print('>>> 计算出所有的可能性：', len(all_run))
 all_in = len(all_run)
 print('>>> 数据集：', all_in)
@@ -310,9 +326,11 @@ def split_and_verify(array,index_index):
 def list_split(items, n):
     return [items[i:i+n] for i in range(0, len(items), n)]
 
+print('>>> 数据集分割：', thread + 1 , '\n>>> 正在分割，请等待加载完成\n')
+threading.Thread(target=Memory_Get).start()
+
 # 对数据进行分割为10份
 data_split = list_split(all_run, all_in//thread)
-print('>>> 数据集分割：', len(data_split))
 start = time.time()
 for i in range(thread):
     index.append(0)
@@ -320,6 +338,14 @@ for i in range(thread):
     t = threading.Thread(target=split_and_verify, args=(data_split[i],i))
     t.start()
 
+# 清理内存
+all_run = []
+time.sleep(1)
+
+disable_memory = True
+time.sleep(1)
+
+os.system('cls')
 while True:
     if threading.active_count() == 1:
         print('>>> 所有线程完成')
