@@ -10,13 +10,26 @@ thread = 48
 
 
 
-data = '51068*2000********'
+data = '51068*2000*6*4****'
+# sex option supports：male、female、any
+sex = 'male'
 
 
 
 def check_id_data(n):
         if len(str(n)) != 18:
             return False
+
+        global sex
+        if sex == 'any':
+            pass
+        elif sex == 'male':
+            if int(n[16]) % 2 == 0:
+                return False
+        else:
+            if int(n[16]) % 2 != 0:
+                return False
+
         var=[7,9,10,5,8,4,2,1,6,3,7,9,10,5,8,4,2]
         var_id=['1','0','x','9','8','7','6','5','4','3','2']
         n = str(n)
@@ -28,6 +41,7 @@ def check_id_data(n):
              return True
         else:
              return False
+
         
 disable_memory = False
 def Memory_Get():
