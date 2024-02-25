@@ -12,7 +12,7 @@ thread = 48
 
 data = '51068*2000*6*4****'
 # sex option supports：male、female、any
-sex = 'male'
+sex = 'any'
 
 
 
