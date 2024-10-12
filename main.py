@@ -9,10 +9,11 @@ thread = 48
 
 
 data = "51068*2000*6*4****"
-# sex option supports：male（男）、female（女）、any
-sex = "any"
+
+sex = "any"  # 性别：male（男）、female（女）、any
 
 
+# 合法性校验
 def check_id_data(n):
     if len(str(n)) != 18:
         return False
@@ -26,7 +27,7 @@ def check_id_data(n):
             return False
 
     var = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2]
-    var_id = ["1", "0", "x", "9", "8", "7", "6", "5", "4", "3", "2"]
+    var_id = ["1", "0", "X", "9", "8", "7", "6", "5", "4", "3", "2"]
     n = str(n)
     sum = 0
     for i in range(0, 17):
@@ -209,11 +210,11 @@ for i in month_run:
                 day_run[str(i)] = ["10", "20", "30"]
         elif day[0] != "*" and day[1] == "*":
             if int(day[0]) == 1:
-                day_run[str(i)] = ["10","11","12","13","14","15","16","17","18","19"]
+                day_run[str(i)] = ["10", "11", "12", "13", "14", "15", "16", "17", "18", "19"]
             elif int(day[0]) == 0:
                 day_run[str(i)] = ["01", "02", "03", "04", "05", "06", "07", "08", "09"]
             elif int(day[0]) == 2:
-                day_run[str(i)] = ["20","21","22","23","24","25","26","27","28","29"]
+                day_run[str(i)] = ["20", "21", "22", "23", "24", "25", "26", "27", "28", "29"]
             elif int(day[0]) == 3:
                 day_run[str(i)] = ["30", "31"]
             else:
@@ -268,11 +269,7 @@ else:
             for i in range(10):
                 for j in range(10):
                     for k in range(10):
-                        tail_run.append(
-                            tail.replace("*", str(i), 1)
-                            .replace("*", str(j), 1)
-                            .replace("*", str(k))
-                        )
+                        tail_run.append(tail.replace("*", str(i), 1).replace("*", str(j), 1).replace("*", str(k)))
         else:
             print(">>> 错误：后4位错误")
             exit()
@@ -360,7 +357,7 @@ while True:
     total = 0
     for i in index:
         total += i
-    print("pass："+ str(total)+ "/"+ str(all_in)+ "  "+ str(round(total / all_in * 100, 2))+ "%",end="\r")
+    print("pass：" + str(total) + "/" + str(all_in) + "  " + str(round(total / all_in * 100, 2)) + "%", end="\r")
 
 print(">>> 所有线程计算完成，结果保存中...")
 r = []
